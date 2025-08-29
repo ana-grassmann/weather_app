@@ -20,10 +20,12 @@ class Weather {
     return Weather(
       lat: jsonResponse['lat'],
       lon: jsonResponse['lon'],
-      dateTime: DateTime.fromMicrosecondsSinceEpoch(jsonResponse['current']['dt']),
+      dateTime: DateTime.fromMicrosecondsSinceEpoch(
+        jsonResponse['current']['dt'],
+      ),
       temperature: jsonResponse['current']['temp'].toDouble(),
       tempFeel: jsonResponse['current']['feels_like'].toDouble(),
-      mainCondition: jsonResponse['current']['weather']['main'],
+      mainCondition: jsonResponse['current']['weather'][0]['main'],
     );
   }
 }

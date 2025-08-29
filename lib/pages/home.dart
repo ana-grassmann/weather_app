@@ -12,23 +12,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-  final _weatherService = WeatherService('c7775ef9efeb6db469bd98ae8fe21991'); //for test only
+  final _weatherService = WeatherService();
   Weather? _weather;
+  String? _locationName;
 
   //fetch weather info
   _fetchWeather() async {
+    final (lat, lon) = await _weatherService.getCurrentLocationCoordinates();
+
     try {
-      final weather = await _weatherService.getWeather(51.0447, 114.0719); //location for test only
-      print(weather);
+      List<dynamic> results = await Future.wait([
+        _weatherService.getWeather(lat, lon),
+        _weatherService.getCurrentLocationName(lat, lon),
+      ]);
+
       setState(() {
-        _weather = weather;
+        _weather = results[0];
+        _locationName = results[1];
       });
-    }
-    catch (e) {
+    } catch (e) {
       print(e);
     }
-    
   }
 
   @override
@@ -42,13 +46,14 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.username),
+        title: Text('Welcome, ${widget.username}!'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('${_weather?.temperature.round()}°C')
+            Text(_locationName ?? "Loading location.."),
+            Text('${_weather?.temperature.round()}°C'),
           ],
         ),
       ),
