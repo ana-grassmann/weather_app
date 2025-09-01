@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'iconInfoCard.dart';
+import 'icon_with_info.dart';
 
-class ExtraInfoCard extends StatelessWidget {
+class ExtraWeatherInfo extends StatelessWidget {
   final int humidity;
   final double windSpeed;
   final DateTime sunrise;
   final DateTime sunset;
 
-  const ExtraInfoCard({
+  const ExtraWeatherInfo({
     super.key,
-    required this.humidity,
-    required this.windSpeed,
+    this.humidity = 0,
+    this.windSpeed = 0.0,
     required this.sunrise,
     required this.sunset,
   });
@@ -20,26 +20,21 @@ class ExtraInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(15),
-      ),
       child: Row(
         children: [
-          IconInfoCard(
+          IconWithInfo(
             info: "$humidity%",
-            icon: Icon(Icons.water_drop, color: Colors.lightBlue),
+            icon: Icon(Icons.water_drop, color: Colors.indigo),
           ),
-          IconInfoCard(
+          IconWithInfo(
             info: "$windSpeed Km/h",
             icon: Icon(Icons.air, color: Colors.white),
           ),
-          IconInfoCard(
+          IconWithInfo(
             info: DateFormat('HH:mm').format(sunrise),
             icon: Icon(Icons.wb_twilight, color: Colors.orange),
           ),
-          IconInfoCard(
+          IconWithInfo(
             info: DateFormat('HH:mm').format(sunset),
             icon: Icon(Icons.wb_twilight, color: Colors.deepOrange),
           ),
