@@ -12,6 +12,7 @@ class IconWithInfo extends StatelessWidget {
       child: Column(
         children: [
           icon,
+          const SizedBox(height: 4),
           Text(
             info,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

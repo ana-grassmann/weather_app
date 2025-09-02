@@ -23,11 +23,14 @@ class Weather {
     required this.forecast,
   });
 
+  //factory method to create a Weather instance from JSON data returned by the API
   factory Weather.fromJson(Map<String, dynamic> jsonResponse) {
     //check https://openweathermap.org/api/one-call-3
     List<Forecast> forecasts = List.empty(growable: true);
     for (final forecast in jsonResponse['daily']) {
-      forecasts.add(Forecast.fromJson(forecast, jsonResponse['timezone_offset']));
+      forecasts.add(
+        Forecast.fromJson(forecast, jsonResponse['timezone_offset']),
+      );
     }
 
     return Weather(

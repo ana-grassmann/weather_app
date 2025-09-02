@@ -70,7 +70,12 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
+    // Responsive horizontal padding for web and mobile
+    final bigScreen = MediaQuery.of(context).size.width > 600;
+    final horizontalPadding = bigScreen ? 100.0 : 20.0;
+
     return Container(
+      // Gradient background
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.lightBlue, Colors.indigo],
@@ -83,28 +88,42 @@ class _HomePageState extends State<HomePage> {
         appBar: StyledAppBar(username: widget.username),
         body: DefaultTextStyle(
           style: const TextStyle(color: Colors.white),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildMainWeatherRow(),
-                TranslucentContainer(
-                  margin: const EdgeInsets.only(top: 15),
-                  child: ExtraWeatherInfo(
-                    humidity: _weather?.humidity ?? 0,
-                    windSpeed: _weather?.windSpeed ?? 0,
-                    sunrise: _weather!.sunrise,
-                    sunset: _weather!.sunset,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Main weather info row
+                  _buildMainWeatherRow(bigScreen),
+                  // Extra weather info (humidity, wind speed, sunrise/sunset)
+                  TranslucentContainer(
+                    margin: const EdgeInsets.only(top: 0),
+                    child: ExtraWeatherInfo(
+                      humidity: _weather?.humidity ?? 0,
+                      windSpeed: _weather?.windSpeed ?? 0,
+                      sunrise: _weather!.sunrise,
+                      sunset: _weather!.sunset,
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 10),
+                  // Weekly forecast title
+                  Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    child: Text(
+                      "This week:",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                  //List of forecasts for the week
+                  Container(
+                    margin: const EdgeInsets.only(top: 6),
                     child: ForecastList(forecasts: _weather?.forecast),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -112,20 +131,36 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildMainWeatherRow() {
+  // Main weather display row, with temperature, location, and animation
+  Widget _buildMainWeatherRow(bool bigScreen) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Current temperature
             Text(
               '${_weather?.temperature.round()}°C',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: bigScreen ? 60 : 40,
+              ),
             ),
-            LocationText(locationName: _locationName),
+            // "Feels like" temperature
+            Text(
+              "Feels like ${_weather?.tempFeel.round()}°C",
+              style: TextStyle(fontSize: 18),
+            ),
+            // Location name
+            if (_locationName.isNotEmpty) ...[
+              SizedBox(height: 10),
+              LocationText(locationName: _locationName),
+            ],
           ],
         ),
+        // Weather animation according to main condition
         WeatherAnimation(mainCondition: _weather?.mainCondition ?? "Clear"),
       ],
     );

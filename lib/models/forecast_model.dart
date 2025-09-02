@@ -11,11 +11,16 @@ class Forecast {
     required this.maxTemp,
   });
 
-  factory Forecast.fromJson(Map<String, dynamic> jsonResponse, int timezoneOffset) {
+  //factory method to create a Forecast instance from JSON data returned by the API
+  factory Forecast.fromJson(
+    Map<String, dynamic> jsonResponse,
+    int timezoneOffset,
+  ) {
     //check https://openweathermap.org/forecast16
     return Forecast(
       dateTime: DateTime.fromMillisecondsSinceEpoch(
-        (jsonResponse['dt'] + timezoneOffset) * 1000, isUtc: true
+        (jsonResponse['dt'] + timezoneOffset) * 1000,
+        isUtc: true,
       ),
       mainCondition: jsonResponse['weather'][0]['main'],
       minTemp: jsonResponse['temp']['min'],

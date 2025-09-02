@@ -25,11 +25,6 @@ class WeatherAnimation extends StatelessWidget {
   Widget build(BuildContext context) {
     final animationPath =
         _animationMap[mainCondition.toLowerCase()] ?? 'assets/Clear.json';
-    return Lottie.asset(
-      animationPath,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-    );
+    return Lottie.asset(animationPath, width: size, fit: BoxFit.contain);
   }
 }

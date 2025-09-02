@@ -32,100 +32,161 @@ class ForecastList extends StatelessWidget {
           //calculating usable width inside the box after padding
           final usableWidth =
               constraints.maxWidth - (_boxPadding.left + _boxPadding.right);
+          final bigScreen = MediaQuery.of(context).size.width > 600;
 
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: forecasts!.length,
-            //render each forecast item
-            itemBuilder: (context, index) {
-              final day = forecasts![index];
-              return TranslucentContainer(
-                padding: _boxPadding,
-                margin: const EdgeInsets.only(top: 10),
-                child: Row(
-                  children: [
-                    //day of month
-                    SizedBox(
-                      width: usableWidth * _datePct,
-                      child: Text(
-                        DateFormat.d().format(day.dateTime),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                        ),
-                        textAlign: TextAlign.center,
+          return Column(
+            children: [
+              //header row (only for bigger screens)
+              if (bigScreen)
+                Padding(
+                  padding: _boxPadding,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: usableWidth * _datePct,
+                        child: _buildHeaderText(text: 'Day'),
                       ),
-                    ),
-                    //day of week
-                    SizedBox(
-                      width: usableWidth * _dayPct,
-                      child: Text(
-                        DateFormat.E().format(day.dateTime),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 22,
-                        ),
-                        textAlign: TextAlign.center,
+                      SizedBox(
+                        width: usableWidth * _dayPct,
+                        child: _buildHeaderText(text: 'Weekday'),
                       ),
-                    ),
-                    //weather icon
-                    SizedBox(
-                      width: usableWidth * _conditionPct,
-                      child: WeatherIcon(mainCondition: day.mainCondition),
-                    ),
-                    //min temperature
-                    _TempColumn(
-                      width: usableWidth * _minTempPct,
-                      icon: Symbols.thermostat_arrow_down,
-                      temp: day.minTemp.round(),
-                    ),
-                    //max temperature
-                    _TempColumn(
-                      width: usableWidth * _maxTempPct,
-                      icon: Symbols.thermostat_arrow_up,
-                      temp: day.maxTemp.round(),
-                      iconAtEnd: true,
-                    ),
-                  ],
+                      SizedBox(
+                        width: usableWidth * _conditionPct,
+                        child: _buildHeaderText(text: 'Condition'),
+                      ),
+                      SizedBox(
+                        width: usableWidth * _minTempPct,
+                        child: _buildHeaderText(text: 'Min Temp'),
+                      ),
+                      SizedBox(
+                        width: usableWidth * _maxTempPct,
+                        child: _buildHeaderText(text: 'Max Temp'),
+                      ),
+                    ],
+                  ),
                 ),
-              );
-            },
+              //List of forecast days
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: forecasts!.length,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final day = forecasts![index];
+                  return TranslucentContainer(
+                    padding: _boxPadding,
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        //day of month
+                        SizedBox(
+                          width: usableWidth * _datePct,
+                          child: Text(
+                            DateFormat.d().format(day.dateTime),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        //day of week
+                        SizedBox(
+                          width: usableWidth * _dayPct,
+                          child: Text(
+                            DateFormat.E().format(day.dateTime),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 22,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        //weather icon
+                        SizedBox(
+                          width: usableWidth * _conditionPct,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              WeatherIcon(mainCondition: day.mainCondition),
+                              if (bigScreen) ...[
+                                const SizedBox(width: 8),
+                                Text(
+                                  day.mainCondition,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    overflow: TextOverflow.clip,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        //min temperature
+                        SizedBox(
+                          width: usableWidth * _minTempPct,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Symbols.thermostat_arrow_down,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                "${day.minTemp.round()}°",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                        //max temperature
+                        SizedBox(
+                          width: usableWidth * _maxTempPct,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "${day.maxTemp.round()}°",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Symbols.thermostat_arrow_up,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
           );
         },
       ),
     );
   }
-}
 
-// A helper widget to display temperature with an icon
-class _TempColumn extends StatelessWidget {
-  final double width;
-  final IconData icon;
-  final int temp;
-  final bool iconAtEnd;
-
-  const _TempColumn({
-    required this.width,
-    required this.icon,
-    required this.temp,
-    this.iconAtEnd = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final tempText = Text(
-      "$temp°",
-      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+  // Helper method to build header text
+  Widget _buildHeaderText({required String text}) {
+    return Text(
+      text,
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       textAlign: TextAlign.center,
-    );
-    final tempIcon = Icon(icon, color: Colors.white, size: 20);
-
-    return SizedBox(
-      width: width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: iconAtEnd ? [tempText, tempIcon] : [tempIcon, tempText],
-      ),
     );
   }
 }

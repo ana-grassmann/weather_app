@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -22,6 +23,10 @@ Future<(double, double)> getCurrentLocationCoordinates() async {
 
 //Gets location name from coordinates
 Future<String> getCurrentLocationName(double lat, double lon) async {
+  if (kIsWeb) {
+    //geocoding package does not support web
+    return "";
+  }
   List<Placemark> placemarks = await placemarkFromCoordinates(lat, lon);
 
   return placemarks[0].locality ?? "";
